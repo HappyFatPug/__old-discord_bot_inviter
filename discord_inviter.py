@@ -11,7 +11,7 @@ client = commands.Bot(command_prefix = '$')
 
 @client.event
 async def on_ready():
-    print('Ready\n ---- \n')
+    print('Ready\n ----')
 
 @client.event
 async def on_message(message):
