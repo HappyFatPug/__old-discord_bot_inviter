@@ -11,7 +11,8 @@ client = commands.Bot(command_prefix = '.')
 
 @client.event
 async def on_ready():
-    print('Ready\n ----')
+    print('Ready')
+    print(f'owner_id: {client.owner_id}')
 
 @client.event
 async def on_message(message):
@@ -29,5 +30,22 @@ async def on_member_remove(member):
 @client.command()
 async def ping(ctx):
     await ctx.send(f'pong! {round(client.latency * 1000)}ms')
+
+@client.command()
+async def invite(ctx):
+    print(ctx.message)
+    author = ctx.author
+    if not author.dm_channel:
+        print('there is no dm channel with this folk, creating one...')
+        await author.create_dm()
+        print('done')
+    p_channel = author.dm_channel
+    print('pm_channel: ', p_channel)
+    try:
+        await p_channel.send('hello')
+        await ctx.send(f'{author.mention} check direct')
+    except discord.errors.Forbidden:
+        await ctx.send(f'{author.mention} have blocked me!')
+
 
 client.run(BOT_TOKEN)
