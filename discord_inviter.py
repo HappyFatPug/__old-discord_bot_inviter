@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from configparser import ConfigParser
+import asyncio
 
 config_file = 'set.ini'
 config = ConfigParser()
@@ -12,7 +13,7 @@ client = commands.Bot(command_prefix = '.')
 @client.event
 async def on_ready():
     print('Ready')
-    print(f'owner_id: {client.owner_id}')
+    print('-------\n')
 
 @client.event
 async def on_message(message):
@@ -47,5 +48,18 @@ async def invite(ctx):
     except discord.errors.Forbidden:
         await ctx.send(f'{author.mention} have blocked me!')
 
+
+@client.command(name='clear')
+async def clear_bot_messages(ctx):
+    if await client.is_owner(ctx.author):
+        mess = list()
+        async with ctx.typing():
+            async for message in ctx.history(limit=1000):
+                if message.author == client.user:
+                    mess.append(message)
+            await ctx.channel.delete_messages(mess)
+            new_mess = await ctx.send('done')
+        await asyncio.sleep(3)
+        await new_mess.delete()
 
 client.run(BOT_TOKEN)
