@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from configparser import ConfigParser
 import asyncio
+from utils import save_dealer, get_member, off_dealer
 
 config_file = 'set.ini'
 config = ConfigParser()
@@ -61,5 +62,28 @@ async def clear_bot_messages(ctx):
             new_mess = await ctx.send('done')
         await asyncio.sleep(3)
         await new_mess.delete()
+
+
+@client.command(name = 'dealer')
+async def set_dealer(ctx, *targets):
+    print('dealer comand')
+    channel = ctx.channel
+    for slug in targets:
+        member = get_member(channel, slug)
+        if member:
+            save_dealer(channel, member, config_file)
+            await ctx.send(f'member {member.mention} now has some abilities')
+
+
+@client.command(name = 'rm_dealer')
+async def remove_dealer(ctx, *targets):
+    print('dealer comand')
+    channel = ctx.channel
+    for slug in targets:
+        member = get_member(channel, slug)
+        if member:
+            off_dealer(channel, member, config_file)
+            await ctx.send(f'member {member.mention} removed from dealers list')
+
 
 client.run(BOT_TOKEN)
