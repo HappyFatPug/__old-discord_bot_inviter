@@ -5,41 +5,50 @@ import asyncio
 from utils import save_dealer, get_member, off_dealer, dealer_check
 from utils import parse_message_args
 
+
 config_file = 'set.ini'
 config = ConfigParser()
 config.read(config_file)
 BOT_TOKEN = config['Bot']['token']
 
-client = commands.Bot(command_prefix = '.')
+client = commands.Bot(command_prefix='.')
 
 INVITE_LIST = {}
 MAX_INVITES = 20
 MAX_TIMOUT = 300
 MIN_TIMOUT = 10
 
+
 @client.event
 async def on_ready():
     print('Ready')
     print('-------\n')
 
+
 @client.event
 async def on_message(message):
-    # print('message')
     if message.channel.id in INVITE_LIST and not message.author.bot:
-        callback_channel = INVITE_LIST[message.channel.id].get('callback', None)
+        callback_channel = INVITE_LIST[message.channel.id].get(
+            'callback', None
+        )
         if callback_channel:
-            await callback_channel.send(f'{message.author.mention} says: {message.content}')
+            await callback_channel.send(
+                f'{message.author.mention} says: {message.content}'
+            )
         await message.channel.send('I am done')
         INVITE_LIST.pop(message.channel.id)
     await client.process_commands(message)
+
 
 @client.event
 async def on_member_join(member):
     print(f'{member} has joined')
 
+
 @client.event
 async def on_member_remove(member):
     print(f'{member} has left')
+
 
 @client.command()
 async def ping(ctx):
@@ -60,8 +69,11 @@ async def clear_bot_messages(ctx):
         await new_mess.delete()
 
 
-@client.command(name = 'dealer')
+@client.command(name='dealer')
 async def set_dealer(ctx, *targets):
+    '''
+    gives "dealer" abilities for provided members
+    '''
     sender = ctx.message.author
     if await client.is_owner(sender):
         print('dealer add command')
@@ -73,7 +85,7 @@ async def set_dealer(ctx, *targets):
                 await ctx.send(f'member {member.mention} now has some abilities')
 
 
-@client.command(name = 'rm_dealer')
+@client.command(name='rm_dealer')
 async def remove_dealer(ctx, *targets):
     sender = ctx.message.author
     if await client.is_owner(sender):
@@ -108,21 +120,17 @@ async def invite_member(ctx, *args):
             target = get_member(channel, mem_slug)
 
             if not target.dm_channel:
-                # print('there is no dm channel with this folk, creating one...')
                 await target.create_dm()
-
             p_channel = target.dm_channel
 
             try:
-                # await p_channel.send('hello')
-                # await ctx.send(f'{target.mention} has been invited')
                 await inviter(p_channel, *pars, callback=ctx.channel)
 
             except discord.errors.Forbidden:
                 await ctx.send(f'{target.mention} have blocked me!')
-        # await ctx.send('OK')targets
 
-async def inviter(p_channel, count = 10, timeout=30, callback=None):
+
+async def inviter(p_channel, count=10, timeout=30, callback=None):
 
     INVITE_LIST[p_channel.id] = {
         'count': count,
@@ -131,8 +139,11 @@ async def inviter(p_channel, count = 10, timeout=30, callback=None):
 
     while INVITE_LIST.get(p_channel.id, None):
         counter = INVITE_LIST[p_channel.id]['count']
-        await p_channel.send('hello number {}, timeout = {} sec'.format(counter, timeout))
+        await p_channel.send(
+            'hello number {}, timeout = {} sec'.format(counter, timeout)
+        )
         try:
+
             if counter <= 1:
                 INVITE_LIST.pop(p_channel.id)
                 await p_channel.send('I am done')
@@ -141,7 +152,6 @@ async def inviter(p_channel, count = 10, timeout=30, callback=None):
         except KeyError:
             return None
         await asyncio.sleep(timeout)
-
 
 
 client.run(BOT_TOKEN)

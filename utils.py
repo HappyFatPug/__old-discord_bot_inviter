@@ -12,8 +12,7 @@ def dealer_check(channel, member, config_file):
     return False
 
 
-
-def get_member(channel, slug:str):
+def get_member(channel, slug: str):
     try:
         int(slug)
     except ValueError:
@@ -53,8 +52,6 @@ def parse_message_args(*args):
     members = []
     pars = []
     for arg in args:
-        # print(arg)
-        # print(type(arg))
         if arg.startswith('$'):
             pars.append(int(arg[1:]))
         else:
@@ -62,13 +59,6 @@ def parse_message_args(*args):
     return members, pars
 
 
-# @dealer
-def check_func(a, b):
-    print(a)
-    print(b)
-    return 'hello'
-
 if __name__ == '__main__':
-    # check_func('a', 'b')
     res = parse_message_args('1111', '0111', '2432', '$333', '$228')
     print(res)

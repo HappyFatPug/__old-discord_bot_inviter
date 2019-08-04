@@ -1,3 +1,5 @@
 make_config.py
 set.ini
 .idea/
+*__pycache__*
+.vscode
